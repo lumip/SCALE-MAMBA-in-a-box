@@ -1,0 +1,3 @@
+[submodule "SCALE-MAMBA"]
+	path = SCALE-MAMBA
+	url = https://github.com/KULeuven-COSIC/SCALE-MAMBA.git
