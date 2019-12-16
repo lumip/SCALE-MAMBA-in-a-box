@@ -39,7 +39,7 @@ WORKDIR /src/SCALE-MAMBA
 
 RUN cp CONFIG CONFIG.mine && \
     echo 'ROOT = /src/SCALE-MAMBA' >> CONFIG.mine && \
-    echo 'OSSL = ""' >> CONFIG.mine
+    echo 'OSSL = ' >> CONFIG.mine
 
 # Compile with DEBUG or RELEASE flags?
 ARG MODE="RELEASE"
@@ -55,7 +55,7 @@ RUN export C_INCLUDE_PATH="/built/mpir/include/:${C_INCLUDE_PATH}" && \
     export CPLUS_INCLUDE_PATH="/built/mpir/include/:${CPLUS_INCLUDE_PATH}" && \
     export LIBRARY_PATH="/built/mpir/lib/:${LIBRARY_PATH}" && \
     export LD_LIBRARY_PATH="/built/mpir/lib:${LD_LIBRARY_PATH}" && \
-    echo $CPLUS_INCLUDE_PATH && \
+    make clean && \
     make progs
 
 #######################################################################################################
@@ -70,10 +70,10 @@ RUN apk add openssl python
 RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++
 
 WORKDIR /home
-COPY --from=build-container ["/built/mpir/include/*", "/usr/include/"]
 COPY --from=build-container ["/built/mpir/lib/*", "/usr/lib/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/License.txt", "/home"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Player.x", "src/SCALE-MAMBA/Setup.x", "/usr/bin/"]
+COPY --from=build-container ["/src/SCALE-MAMBA/Circuits/Bristol/", "/home/Circuits/Bristol/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/compile.py", "/home/bin/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Compiler/", "/src/SCALE-MAMBA/compile.py", "/home/bin/Compiler/"]
 RUN ln -s /home/bin/compile.py /usr/bin/compile
@@ -83,5 +83,9 @@ RUN mkdir /home/Cert-Store /home/Data
 FROM bundle AS quickstart-bundle
 
 COPY ["SCALE-MAMBA/Auto-Test-Data/Cert-Store/*", "/home/Cert-Store/"]
+
+############################################
+#### bundle container as default target ####
+############################################
 
 FROM bundle
