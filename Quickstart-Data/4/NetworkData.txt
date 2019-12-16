@@ -1,0 +1,8 @@
+RootCA.crt
+4
+0 mamba1 Player1.crt P1
+1 mamba2 Player2.crt P2
+2 mamba3 Player3.crt P3
+3 mamba4 Player4.crt P4
+0
+0

@@ -80,9 +80,20 @@ RUN ln -s /home/bin/compile.py /usr/bin/compile
 
 RUN mkdir /home/Cert-Store /home/Data
 
+
+#######################################################################################################
+####################### Quickstart container, ready to run with preconfiguration ######################
+#######################################################################################################
 FROM bundle AS quickstart-bundle
 
 COPY ["SCALE-MAMBA/Auto-Test-Data/Cert-Store/*", "/home/Cert-Store/"]
+COPY ["SCALE-MAMBA/Programs/", "/home/Programs"]
+VOLUME /home/Programs
+
+# number of parties to configure quickstart for (2 to 5); default is 2
+ARG PARTIES=2
+COPY ["Quickstart-Data/${PARTIES}/", "/home/Data"]
+VOLUME /home/Data
 
 ############################################
 #### bundle container as default target ####
