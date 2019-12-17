@@ -6,15 +6,19 @@ The container is created with the aim of facilitating easy deployment and fully 
 
 *Disclaimer: This work is completely independent of the SCALE-MAMBA framework. I claim no ownership of of the latter or affiliation with its authors.*
 
+The last version of SCALE-MAMBA to work with the build process is 1.6. The version numbers of the containers follow those of the framework.
+
 ## How To Build
 
 We include the SCALE-MAMBA repository as a submodule, so make sure to initialise submodules:
 ```
 git clone --recursive https://github.com/lumip/SCALE-MAMBA-in-a-box.git
+cd SCALE-MAMBA-in-a-box
 ```
 or
 ```
 git clone https://github.com/lumip/SCALE-MAMBA-in-a-box.git
+cd SCALE-MAMBA-in-a-box
 git submodule init
 git submodule update
 ```
@@ -63,14 +67,14 @@ The configuration assumes that the parties are hosted in containers named `mamba
 
 ## Example: Running in Quickstart Configuration
 
-Assume we want to run a program that is located in `/my-mamba-program` in a 2-party quickstart configuration:
+Assume we want to run a program that is located in `/my-mamba-program/` in a 2-party quickstart configuration:
 
 ```
 # build container
 docker build --target quickstart-bundle --build-arg PARTIES=2 -t lumip/scale-mamba:quickstart <PATH_TO_THIS_REPOSITORY>
 
 # compile MAMBA program
-docker run --rm --volume /my-mamba-program:/home/Programs/my-mamba-program lumip/scale-mamba:quickstart compile Programs/my-mamba-program
+docker run --rm --volume /my-mamba-program/:/home/Programs/my-mamba-program/ lumip/scale-mamba:quickstart compile Programs/my-mamba-program
 
 # create docker network
 docker network create mamba-net
