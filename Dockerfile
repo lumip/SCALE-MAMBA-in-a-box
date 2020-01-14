@@ -34,7 +34,7 @@ RUN apk add libexecinfo-dev openssl-dev
 RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++-dev
 
 # Load SCALE-MAMBA source
-COPY ["SCALE-MAMBA/", "SCALE-MAMBA"]
+COPY ["SCALE-MAMBA/", "/src/SCALE-MAMBA"]
 WORKDIR /src/SCALE-MAMBA
 
 RUN cp CONFIG CONFIG.mine && \
@@ -45,18 +45,17 @@ RUN cp CONFIG CONFIG.mine && \
 ARG MODE="RELEASE"
 
 RUN if [ "$MODE" = "DEBUG" ] ; then \
-        echo 'FLAGS = -DSH_DEBUG -DDEBUG -DMAX_MOD_SZ=$(MAX_MOD) -DDETERMINISTIC' >> CONFIG.mine; \
+        echo 'FLAGS = -DSH_DEBUG -DDEBUG -DMAX_MOD_SZ=$(MAX_MOD) -DDETERMINISTIC -g' >> CONFIG.mine; \
     else \
         echo 'FLAGS = -DMAX_MOD_SZ=$(MAX_MOD)'; \
     fi
     
-# Compile!
-RUN export C_INCLUDE_PATH="/built/mpir/include/:${C_INCLUDE_PATH}" && \
-    export CPLUS_INCLUDE_PATH="/built/mpir/include/:${CPLUS_INCLUDE_PATH}" && \
-    export LIBRARY_PATH="/built/mpir/lib/:${LIBRARY_PATH}" && \
-    export LD_LIBRARY_PATH="/built/mpir/lib:${LD_LIBRARY_PATH}" && \
-    make clean && \
-    make progs
+ENV C_INCLUDE_PATH="/built/mpir/include/:${C_INCLUDE_PATH}" \
+    CPLUS_INCLUDE_PATH="/built/mpir/include/:${CPLUS_INCLUDE_PATH}" \
+    LIBRARY_PATH="/built/mpir/lib/:${LIBRARY_PATH}" \
+    LD_LIBRARY_PATH="/built/mpir/lib:${LD_LIBRARY_PATH}"
+
+RUN make clean && make
 
 #######################################################################################################
 ################ Final "published" container, containing only the compiled executables ################
