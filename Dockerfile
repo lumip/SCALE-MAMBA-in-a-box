@@ -77,7 +77,10 @@ COPY --from=build-container ["/src/SCALE-MAMBA/compile.py", "/home/bin/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Compiler/", "/src/SCALE-MAMBA/compile.py", "/home/bin/Compiler/"]
 RUN ln -s /home/bin/compile.py /usr/bin/compile
 
-RUN mkdir /home/Cert-Store /home/Data
+RUN adduser --no-create-home --disabled-password scale && chown -R scale:scale /home
+USER scale
+
+RUN mkdir /home/Cert-Store /home/Data /home/Programs
 
 
 #######################################################################################################
