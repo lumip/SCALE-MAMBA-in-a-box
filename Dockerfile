@@ -16,8 +16,8 @@ RUN wget --quiet 'http://mpir.org/mpir-3.0.0.tar.bz2' && \
     tar xf mpir-3.0.0.tar.bz2 && \
     cd mpir-3.0.0 && \
     ./configure --enable-cxx --prefix="/built/mpir" && \
-    make && \
-    make check && \
+    make -j$(nproc) && \
+    make -j$(nproc) check && \
     make install && \
     cd ../ && \
     rm -rf mpir-3.0.0*
@@ -45,9 +45,12 @@ RUN cp CONFIG CONFIG.mine && \
 ARG MODE="RELEASE"
 
 RUN if [ "$MODE" = "DEBUG" ] ; then \
-        echo 'FLAGS = -DSH_DEBUG -DDEBUG -DMAX_MOD_SZ=$(MAX_MOD) -DDETERMINISTIC -g' >> CONFIG.mine; \
+        echo 'FLAGS = -g -DSH_DEBUG -DDEBUG -DMAX_MOD_SZ=$(MAX_MOD) -DDETERMINISTIC' >> CONFIG.mine; \
+        echo "OPT = -O0" >> CONFIG.mine; \
+        echo "LDFLAGS = -lexecinfo" >> CONFIG.mine; \
     else \
         echo 'FLAGS = -DMAX_MOD_SZ=$(MAX_MOD)'; \
+        echo "OPT = -O3" >> CONFIG.mine; \
     fi
     
 ENV C_INCLUDE_PATH="/built/mpir/include/:${C_INCLUDE_PATH}" \
@@ -55,7 +58,7 @@ ENV C_INCLUDE_PATH="/built/mpir/include/:${C_INCLUDE_PATH}" \
     LIBRARY_PATH="/built/mpir/lib/:${LIBRARY_PATH}" \
     LD_LIBRARY_PATH="/built/mpir/lib:${LD_LIBRARY_PATH}"
 
-RUN make clean && make
+RUN make clean && make -j$(nproc) progs
 
 #######################################################################################################
 ################ Final "published" container, containing only the compiled executables ################
@@ -65,7 +68,7 @@ FROM alpine:edge AS bundle
 LABEL maintainer="lukas.m.prediger@aalto.fi"
 LABEL version="1.6.0"
 
-RUN apk add openssl python
+RUN apk add openssl python libexecinfo
 RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++
 
 WORKDIR /home
