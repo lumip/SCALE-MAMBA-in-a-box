@@ -72,7 +72,7 @@ RUN apk add openssl python libexecinfo
 RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++
 
 WORKDIR /home
-COPY --from=build-container ["/built/mpir/lib/*", "/usr/lib/"]
+COPY --from=build-container ["/built/mpir/lib/*", "src/SCALE-MAMBA/libMPC.so", "/usr/lib/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/License.txt", "/home"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Player.x", "src/SCALE-MAMBA/Setup.x", "/usr/bin/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Circuits/Bristol/", "/home/Circuits/Bristol/"]
