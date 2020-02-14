@@ -1,5 +1,5 @@
 VERSION = 1.7
-BUILD = 0-alpha
+BUILD = 0-ubuntu
 TAG = $(VERSION).$(BUILD)
 
 IMAGE = lumip/scale-mamba

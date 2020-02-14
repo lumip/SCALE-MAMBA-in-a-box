@@ -1,12 +1,12 @@
 #######################################################################################################
 ################################# Container for building dependencies #################################
 #######################################################################################################
-FROM alpine:edge AS pre-build-container
+FROM ubuntu AS pre-build-container
 
 LABEL maintainer="lukas.m.prediger@aalto.fi"
 
 # Install required packages
-RUN apk add g++ yasm m4 make libtool
+RUN apt-get update && apt-get install -y g++ yasm m4 make libtool wget
 
 RUN mkdir /src /built
 WORKDIR /src
@@ -30,8 +30,7 @@ FROM pre-build-container AS build-container
 
 LABEL maintainer="lukas.m.prediger@aalto.fi"
 
-RUN apk add libexecinfo-dev openssl-dev
-RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++-dev
+RUN apt-get update && apt-get install -y libssl-dev libcrypto++-dev
 
 # Load SCALE-MAMBA source
 COPY ["SCALE-MAMBA/", "/src/SCALE-MAMBA"]
@@ -63,13 +62,12 @@ RUN make clean && make -j$(nproc) progs
 #######################################################################################################
 ################ Final "published" container, containing only the compiled executables ################
 #######################################################################################################
-FROM alpine:edge AS bundle
+FROM ubuntu AS bundle
 
 LABEL maintainer="lukas.m.prediger@aalto.fi"
-LABEL version="1.7.0-alpha"
+LABEL version="1.7.0-ubuntu"
 
-RUN apk add openssl python libexecinfo bash cargo
-RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++
+RUN apt-get update && apt-get install -y python cargo libcrypto++ openssl
 
 WORKDIR /home
 COPY --from=build-container ["/built/mpir/lib/*", "src/SCALE-MAMBA/libMPC.so", "/usr/lib/"]
@@ -83,7 +81,7 @@ COPY --from=build-container ["/src/SCALE-MAMBA/compile-mamba.py", "/src/SCALE-MA
 COPY --from=build-container ["/src/SCALE-MAMBA/Assembler/", "/home/Assembler/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/scasm", "/src/SCALE-MAMBA/compile-new.sh", "/src/SCALE-MAMBA/compile.sh", "/home/"]
 
-RUN adduser --no-create-home --disabled-password scale && chown -R scale:scale /home
+RUN useradd --no-create-home --user-group scale && chown -R scale:scale /home
 USER scale
 
 RUN mkdir /home/Cert-Store /home/Data /home/Programs
