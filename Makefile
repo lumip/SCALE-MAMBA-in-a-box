@@ -1,5 +1,5 @@
-VERSION = 1.6
-BUILD = 0
+VERSION = 1.7
+BUILD = 0-alpha
 TAG = $(VERSION).$(BUILD)
 
 IMAGE = lumip/scale-mamba
@@ -9,6 +9,10 @@ build: build-latest
 
 .PHONY: upload
 upload: upload-version upload-major upload-latest
+
+.PHONY: test-build
+test-build:
+	- docker build -t $(IMAGE):$(TAG) .
 
 .PHONY: build-version
 build-version:

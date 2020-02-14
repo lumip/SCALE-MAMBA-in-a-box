@@ -6,7 +6,7 @@ The container is created with the aim of facilitating easy deployment and fully 
 
 *Disclaimer: This work is completely independent of the SCALE-MAMBA framework. I claim no ownership of of the latter or affiliation with its authors.*
 
-The last version of SCALE-MAMBA to work with the build process is 1.6. The version numbers of the containers follow those of the framework.
+The last version of SCALE-MAMBA to work with the build process is 1.7. The version numbers of the containers follow those of the framework.
 
 ## How To Build
 
@@ -42,7 +42,7 @@ The container hosts the framework executables in `/usr/bin`, so they are globall
 
 - `Player.x` is the main executable that runs a party instance (a Player) participating in a secure multi-party computation session.
 - `Setup.x` is used to configure the framework (set addresses of remote parties and their certificates, configure secret sharing scheme, etc..)
-- `compile` is used to compile MAMBA code into instruction tapes interpetable by `Player.x`.
+- `./compile-old.sh` is used to compile MAMBA code into instruction tapes interpetable by `Player.x`. Unfortunately, the new compilation scheme introduced in v1.7 of SCALE-MAMBA does not work in the containers just now.
 
 For more detailed information please refer to the [framework documentation](https://homes.esat.kuleuven.be/~nsmart/SCALE/Documentation.pdf).
 
@@ -74,7 +74,7 @@ Assume we want to run a program that is located in `/my-mamba-program/` in a 2-p
 docker build --target quickstart-bundle --build-arg PARTIES=2 -t lumip/scale-mamba:quickstart <PATH_TO_THIS_REPOSITORY>
 
 # compile MAMBA program
-docker run --rm --volume /my-mamba-program/:/home/Programs/my-mamba-program/ lumip/scale-mamba:quickstart compile Programs/my-mamba-program
+docker run --rm --volume /my-mamba-program/:/home/Programs/my-mamba-program/ lumip/scale-mamba:quickstart ./compile-old.sh Programs/my-mamba-program
 
 # create docker network
 docker network create mamba-net

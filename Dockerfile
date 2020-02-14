@@ -66,9 +66,9 @@ RUN make clean && make -j$(nproc) progs
 FROM alpine:edge AS bundle
 
 LABEL maintainer="lukas.m.prediger@aalto.fi"
-LABEL version="1.6.0"
+LABEL version="1.7.0-alpha"
 
-RUN apk add openssl python libexecinfo
+RUN apk add openssl python libexecinfo bash cargo
 RUN apk add --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing crypto++
 
 WORKDIR /home
@@ -76,9 +76,12 @@ COPY --from=build-container ["/built/mpir/lib/*", "src/SCALE-MAMBA/libMPC.so", "
 COPY --from=build-container ["/src/SCALE-MAMBA/License.txt", "/home"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Player.x", "src/SCALE-MAMBA/Setup.x", "/usr/bin/"]
 COPY --from=build-container ["/src/SCALE-MAMBA/Circuits/Bristol/", "/home/Circuits/Bristol/"]
-COPY --from=build-container ["/src/SCALE-MAMBA/compile.py", "/home/bin/"]
-COPY --from=build-container ["/src/SCALE-MAMBA/Compiler/", "/src/SCALE-MAMBA/compile.py", "/home/bin/Compiler/"]
-RUN ln -s /home/bin/compile.py /usr/bin/compile
+# copy old compiler files
+COPY --from=build-container ["/src/SCALE-MAMBA/Compiler/", "/home/Compiler/"]
+COPY --from=build-container ["/src/SCALE-MAMBA/compile-mamba.py", "/src/SCALE-MAMBA/compile-old.sh", "/home/"]
+# copy new compiler files
+COPY --from=build-container ["/src/SCALE-MAMBA/Assembler/", "/home/Assembler/"]
+COPY --from=build-container ["/src/SCALE-MAMBA/scasm", "/src/SCALE-MAMBA/compile-new.sh", "/src/SCALE-MAMBA/compile.sh", "/home/"]
 
 RUN adduser --no-create-home --disabled-password scale && chown -R scale:scale /home
 USER scale
