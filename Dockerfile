@@ -65,7 +65,7 @@ RUN make clean && make -j$(nproc) progs
 FROM ubuntu AS bundle
 
 LABEL maintainer="lukas.m.prediger@aalto.fi"
-LABEL version="1.7.0-ubuntu"
+LABEL version="1.7.0"
 
 RUN apt-get update && apt-get install -y python cargo libcrypto++ openssl
 
